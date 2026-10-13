@@ -135,6 +135,7 @@
                     <table class="w-full text-right text-sm">
                         <thead class="bg-slate-900/90 text-slate-400 uppercase text-xs border-b border-slate-800">
                             <tr>
+                                <th class="p-4">الصورة</th>
                                 <th class="p-4">رمز QR</th>
                                 <th class="p-4">كود الأصل</th>
                                 <th class="p-4">اسم الأصل / البيان</th>
@@ -170,7 +171,7 @@
 
     <!-- Modal: Add / Edit Asset -->
     <div id="assetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-panel bg-slate-900 w-full max-w-lg rounded-2xl border border-slate-700 p-6 space-y-4">
+        <div class="glass-panel bg-slate-900 w-full max-w-lg rounded-2xl border border-slate-700 p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                 <h3 class="text-base font-bold text-white" id="modalTitle">إضافة أصل جديد</h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -186,6 +187,17 @@
                     <label class="block text-slate-300 font-semibold mb-1">اسم الأصل / التجهيز</label>
                     <input type="text" id="assetName" required placeholder="مثال: جهاز كمبيوتر محطة عمل" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
                 </div>
+                
+                <!-- صورة الأصل -->
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1"><i class="fa-solid fa-image text-blue-400 ml-1"></i>صورة الأصل (من الاستوديو أو الكاميرا)</label>
+                    <input type="file" id="assetImageInput" accept="image/*" onchange="previewImage(event)" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-slate-400 text-xs file:ml-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-500">
+                    <input type="hidden" id="assetImageBase64">
+                    <div id="imagePreviewContainer" class="mt-2 hidden">
+                        <img id="imagePreview" src="" class="h-20 w-20 object-cover rounded-lg border border-slate-700">
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-slate-300 font-semibold mb-1">رقم الصنف</label>
@@ -236,14 +248,22 @@
         </div>
     </div>
 
+    <!-- Modal: View Image Large -->
+    <div id="imageModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4" onclick="closeImageModal()">
+        <div class="relative max-w-lg w-full">
+            <img id="largeImage" src="" class="w-full max-h-[80vh] object-contain rounded-2xl border border-slate-700 shadow-2xl">
+            <p class="text-center text-xs text-slate-400 mt-2">اضغط في أي مكان للإغلاق</p>
+        </div>
+    </div>
+
     <!-- Application Script Logic -->
     <script>
         const defaultAssets = [
-            { id: "1", code: "MECH-A-1001", name: "أجهزة كمبيوتر مكتبي (25 جهاز)", categoryNum: "1000", location: "المكاتب الإدارية", quantity: 25, status: "ممتازة" },
-            { id: "2", code: "MECH-A-4501", name: "كراسي مكتبية سوداء (30 كرسي)", categoryNum: "4500", location: "مكتب رئيس القسم", quantity: 30, status: "ممتازة" },
-            { id: "3", code: "MECH-A-2001", name: "طاولة اجتماع رئيس القسم", categoryNum: "4500", location: "مكتب رئيس القسم", quantity: 1, status: "ممتازة" },
-            { id: "4", code: "MECH-A-3001", name: "معدات وأدوات فحص الميكانيكا", categoryNum: "3000", location: "ورشة الميكانيكا والصيانة", quantity: 15, status: "جيدة" },
-            { id: "5", code: "MECH-A-5001", name: "قطع غيار ومستلزمات صيانة", categoryNum: "5000", location: "المستودع الرئيسي", quantity: 50, status: "جيدة" }
+            { id: "1", code: "MECH-A-1001", name: "أجهزة كمبيوتر مكتبي (25 جهاز)", categoryNum: "1000", location: "المكاتب الإدارية", quantity: 25, status: "ممتازة", image: "" },
+            { id: "2", code: "MECH-A-4501", name: "كراسي مكتبية سوداء (30 كرسي)", categoryNum: "4500", location: "مكتب رئيس القسم", quantity: 30, status: "ممتازة", image: "" },
+            { id: "3", code: "MECH-A-2001", name: "طاولة اجتماع رئيس القسم", categoryNum: "4500", location: "مكتب رئيس القسم", quantity: 1, status: "ممتازة", image: "" },
+            { id: "4", code: "MECH-A-3001", name: "معدات وأدوات فحص الميكانيكا", categoryNum: "3000", location: "ورشة الميكانيكا والصيانة", quantity: 15, status: "جيدة", image: "" },
+            { id: "5", code: "MECH-A-5001", name: "قطع غيار ومستلزمات صيانة", categoryNum: "5000", location: "المستودع الرئيسي", quantity: 50, status: "جيدة", image: "" }
         ];
 
         let assets = JSON.parse(localStorage.getItem('mech_assets')) || defaultAssets;
@@ -283,7 +303,13 @@
             list.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-800/50 transition";
+                
+                const imgHtml = item.image 
+                    ? `<img src="${item.image}" onclick="openImageModal('${item.image}')" class="h-10 w-10 object-cover rounded-lg border border-slate-700 cursor-pointer hover:scale-105 transition">`
+                    : `<div class="h-10 w-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 text-xs"><i class="fa-solid fa-image"></i></div>`;
+
                 tr.innerHTML = `
+                    <td class="p-4">${imgHtml}</td>
                     <td class="p-4">
                         <button onclick="showQrModal('${item.code}', '${item.name}')" class="p-2 bg-slate-800 hover:bg-blue-600/20 text-blue-400 rounded-lg transition">
                             <i class="fa-solid fa-qrcode text-base"></i>
@@ -308,6 +334,28 @@
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('assetImageBase64').value = e.target.result;
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function openImageModal(src) {
+            document.getElementById('largeImage').src = src;
+            document.getElementById('imageModal').classList.remove('hidden');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
         }
 
         function updateStats() {
@@ -336,6 +384,8 @@
         function openAddModal() {
             document.getElementById('assetId').value = '';
             document.getElementById('assetForm').reset();
+            document.getElementById('assetImageBase64').value = '';
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
             document.getElementById('modalTitle').innerText = 'إضافة أصل جديد';
             document.getElementById('assetModal').classList.remove('hidden');
         }
@@ -350,6 +400,14 @@
             document.getElementById('assetQuantity').value = item.quantity;
             document.getElementById('assetLocation').value = item.location;
             document.getElementById('assetStatus').value = item.status;
+            document.getElementById('assetImageBase64').value = item.image || '';
+
+            if (item.image) {
+                document.getElementById('imagePreview').src = item.image;
+                document.getElementById('imagePreviewContainer').classList.remove('hidden');
+            } else {
+                document.getElementById('imagePreviewContainer').classList.add('hidden');
+            }
 
             document.getElementById('modalTitle').innerText = 'تعديل بيانات الأصل';
             document.getElementById('assetModal').classList.remove('hidden');
@@ -369,7 +427,8 @@
                 categoryNum: document.getElementById('assetCategoryNum').value,
                 quantity: Number(document.getElementById('assetQuantity').value),
                 location: document.getElementById('assetLocation').value,
-                status: document.getElementById('assetStatus').value
+                status: document.getElementById('assetStatus').value,
+                image: document.getElementById('assetImageBase64').value
             };
 
             if (id) {
