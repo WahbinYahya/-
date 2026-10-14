@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام جرد الأصول  QR - قسم التقنية الميكانيكية</title>
+    <title>نظام جرد  QR - قسم التقنية الميكانيكية</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -41,7 +41,7 @@
                     <i class="fa-solid fa-boxes-stacked text-xl text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-sm sm:text-lg font-bold text-white leading-tight">نظام جرد الأصول  QR</h1>
+                    <h1 class="text-sm sm:text-lg font-bold text-white leading-tight">نظام جرد  QR</h1>
                     <p class="text-xs text-blue-400 font-semibold">قسم التقنية الميكانيكية</p>
                 </div>
             </div>
@@ -63,7 +63,7 @@
     <!-- Main Content Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
 
-        <!-- TAB 1: DASHBOARD (Home with 2 Building Cards) -->
+        <!-- TAB 1: DASHBOARD -->
         <section id="tab-dashboard" class="space-y-6">
             <!-- Summary Stats -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -89,9 +89,24 @@
                 </div>
             </div>
 
+            <!-- GPS Location Bar -->
+            <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-blue-500/30 bg-gradient-to-r from-slate-900 via-blue-950/20 to-slate-900">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600/20 text-blue-400 p-3 rounded-xl border border-blue-500/30">
+                        <i class="fa-solid fa-map-location-dot text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white">تحديد الموقع الجغرافي للمبنى (GPS)</h3>
+                        <p class="text-xs text-slate-400" id="gpsStatusText">اضغط على الزر للحصول على إحداثيات موقعك الحالي وفتحه في خرائط جوجل</p>
+                    </div>
+                </div>
+                <button onclick="getGeoLocation()" class="w-full sm:w-auto px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition">
+                    <i class="fa-solid fa-location-crosshairs"></i> تحديد موقعي الحالي
+                </button>
+            </div>
+
             <!-- Building Selection Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                <!-- Card 1: Theory Building -->
                 <div onclick="filterByBuildingCard('مبنى النظري 1930J')" class="glass-panel p-6 rounded-2xl border border-emerald-500/30 hover:border-emerald-500 cursor-pointer transition transform hover:-translate-y-1 bg-gradient-to-br from-slate-900 to-emerald-950/30 flex items-center justify-between shadow-xl">
                     <div class="space-y-2">
                         <div class="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold inline-block border border-emerald-500/20">مبنى أكاديمي</div>
@@ -106,7 +121,6 @@
                     </div>
                 </div>
 
-                <!-- Card 2: Workshops Building -->
                 <div onclick="filterByBuildingCard('مبنى الورش 1930I')" class="glass-panel p-6 rounded-2xl border border-amber-500/30 hover:border-amber-500 cursor-pointer transition transform hover:-translate-y-1 bg-gradient-to-br from-slate-900 to-amber-950/30 flex items-center justify-between shadow-xl">
                     <div class="space-y-2">
                         <div class="bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full text-xs font-bold inline-block border border-amber-500/20">مبنى عملي وتدريبي</div>
@@ -145,11 +159,10 @@
 
         <!-- TAB 2: ASSETS MANAGEMENT -->
         <section id="tab-assets" class="hidden space-y-6">
-            <!-- Action Toolbar -->
             <div class="glass-panel p-4 rounded-2xl flex flex-col md:flex-row gap-4 items-center justify-between no-print">
                 <div class="relative w-full md:w-80">
                     <i class="fa-solid fa-magnifying-glass absolute right-3 top-3 text-slate-400 text-sm"></i>
-                    <input type="text" id="searchInput" onkeyup="filterAssets()" placeholder="بحث بالاسم، الكود، المبنى، أو الموقع..." 
+                    <input type="text" id="searchInput" onkeyup="filterAssets()" placeholder="بحث بالاسم، الكود، المبنى، الموقع، أو الملاحظات..." 
                            class="w-full pr-9 pl-4 py-2 bg-slate-900/90 border border-slate-700 rounded-xl text-sm focus:outline-none focus:border-blue-500 text-slate-100">
                 </div>
                 <div class="flex flex-wrap gap-2 w-full md:w-auto justify-end">
@@ -173,14 +186,15 @@
                                 <th class="p-4">كود الأصل</th>
                                 <th class="p-4">اسم الأصل / البيان</th>
                                 <th class="p-4">المبنى</th>
-                                <th class="p-4">الموقع / القاعة</th>
+                                <th class="p-4">الموقع</th>
                                 <th class="p-4">الكمية</th>
                                 <th class="p-4">الحالة</th>
+                                <th class="p-4">ملاحظات</th>
                                 <th class="p-4 no-print text-center">إجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="assetsTableBody" class="divide-y divide-slate-800 text-slate-200">
-                            <!-- Dynamic Content Inserted Here -->
+                            <!-- Dynamic Content -->
                         </tbody>
                     </table>
                 </div>
@@ -192,11 +206,8 @@
             <div class="max-w-xl mx-auto glass-panel p-6 rounded-2xl text-center">
                 <h3 class="text-lg font-bold text-white mb-2"><i class="fa-solid fa-camera text-blue-400 ml-2"></i>مسح رمز QR للأصل</h3>
                 <p class="text-xs text-slate-400 mb-6">وجه كاميرا الجوال نحو ملصق الـ QR الخاص بالأصل في مباني القسم</p>
-                
                 <div id="qr-reader" class="overflow-hidden rounded-xl border-2 border-dashed border-slate-700 bg-slate-900 mb-4"></div>
-                <div id="scannedResult" class="hidden p-4 bg-slate-900 border border-emerald-500/50 rounded-xl text-right space-y-2">
-                    <!-- Scanned details will pop up here -->
-                </div>
+                <div id="scannedResult" class="hidden p-4 bg-slate-900 border border-emerald-500/50 rounded-xl text-right space-y-2"></div>
             </div>
         </section>
 
@@ -218,10 +229,9 @@
                 </div>
                 <div>
                     <label class="block text-slate-300 font-semibold mb-1">اسم الأصل / التجهيز</label>
-                    <input type="text" id="assetName" required placeholder="مثال: جهاز عرض (بروجكتور) / معدة ورشة" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+                    <input type="text" id="assetName" required placeholder="مثال: جهاز عرض (بروجكتور)" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
                 </div>
                 
-                <!-- صورة الأصل -->
                 <div>
                     <label class="block text-slate-300 font-semibold mb-1"><i class="fa-solid fa-image text-blue-400 ml-1"></i>صورة الأصل (من الاستوديو أو الكاميرا)</label>
                     <input type="file" id="assetImageInput" accept="image/*" onchange="previewImage(event)" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-slate-400 text-xs file:ml-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-500">
@@ -247,8 +257,8 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-slate-300 font-semibold mb-1">الموقع / القاعة / الورشة</label>
-                        <input type="text" id="assetLocation" required placeholder="مثال: قاعة 101 / ورشة المحركات" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+                        <label class="block text-slate-300 font-semibold mb-1">الموقع / القاعة</label>
+                        <input type="text" id="assetLocation" required placeholder="قاعة 101 / ورشة المحركات" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
                     </div>
                     <div>
                         <label class="block text-slate-300 font-semibold mb-1">رقم الصنف</label>
@@ -256,13 +266,19 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-slate-300 font-semibold mb-1">حالة الأصل</label>
-                    <select id="assetStatus" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
-                        <option value="ممتازة">ممتازة (يعمل بكفاءة)</option>
-                        <option value="جيدة">جيدة</option>
-                        <option value="تحت الصيانة">تحت الصيانة</option>
-                    </select>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1">حالة الأصل</label>
+                        <select id="assetStatus" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+                            <option value="ممتازة">ممتازة (يعمل بكفاءة)</option>
+                            <option value="جيدة">جيدة</option>
+                            <option value="تحت الصيانة">تحت الصيانة</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1">ملاحظات</label>
+                        <input type="text" id="assetNotes" placeholder="أدخل أي ملاحظات..." class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+                    </div>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
@@ -298,13 +314,13 @@
     <!-- Application Script Logic -->
     <script>
         const defaultAssets = [
-            { id: "1", code: "MECH-J-1001", name: "أجهزة حاسب قاعة التدريب النظري", building: "مبنى النظري 1930J", location: "قاعة الحاسب 101", categoryNum: "1000", quantity: 20, status: "ممتازة", image: "" },
-            { id: "2", code: "MECH-J-1002", name: "أجهزة عرض (بروجكتور)", building: "مبنى النظري 1930J", location: "قاعات المحاضرات", categoryNum: "2000", quantity: 5, status: "ممتازة", image: "" },
-            { id: "3", code: "MECH-I-3001", name: "أجهزة فحص الأعطال (Xtool / Launch)", building: "مبنى الورش 1930I", location: "ورشة السيارات", categoryNum: "3000", quantity: 8, status: "ممتازة", image: "" },
-            { id: "4", code: "MECH-I-3002", name: "منضدة ومعدات صيانة ميكانيكية", building: "مبنى الورش 1930I", location: "ورشة الميكانيكا العامة", categoryNum: "3000", quantity: 15, status: "جيدة", image: "" }
+            { id: "1", code: "MECH-J-1001", name: "أجهزة حاسب قاعة التدريب النظري", building: "مبنى النظري 1930J", location: "قاعة الحاسب 101", categoryNum: "1000", quantity: 20, status: "ممتازة", notes: "بحالة ممتازة وجديدة", image: "" },
+            { id: "2", code: "MECH-J-1002", name: "أجهزة عرض (بروجكتور)", building: "مبنى النظري 1930J", location: "قاعات المحاضرات", categoryNum: "2000", quantity: 5, status: "ممتازة", notes: "", image: "" },
+            { id: "3", code: "MECH-I-3001", name: "أجهزة فحص الأعطال (Xtool / Launch)", building: "مبنى الورش 1930I", location: "ورشة السيارات", categoryNum: "3000", quantity: 8, status: "ممتازة", notes: "تحتاج تحديث النسخة", image: "" },
+            { id: "4", code: "MECH-I-3002", name: "منضدة ومعدات صيانة ميكانيكية", building: "مبنى الورش 1930I", location: "ورشة الميكانيكا العامة", categoryNum: "3000", quantity: 15, status: "جيدة", notes: "", image: "" }
         ];
 
-        let assets = JSON.parse(localStorage.getItem('mech_assets_v2')) || defaultAssets;
+        let assets = JSON.parse(localStorage.getItem('mech_assets_v3')) || defaultAssets;
         let html5QrcodeScanner = null;
         let buildingChartInstance = null;
         let statusChartInstance = null;
@@ -315,7 +331,6 @@
             updateStats();
             initCharts();
             
-            // Handle browser back button (popstate)
             window.addEventListener('popstate', (event) => {
                 const targetTab = event.state && event.state.tab ? event.state.tab : 'dashboard';
                 switchTab(targetTab, false);
@@ -323,7 +338,7 @@
         });
 
         function saveToLocalStorage() {
-            localStorage.setItem('mech_assets_v2', JSON.stringify(assets));
+            localStorage.setItem('mech_assets_v3', JSON.stringify(assets));
         }
 
         function switchTab(tab, pushHistory = true) {
@@ -356,6 +371,27 @@
             filterAssets();
         }
 
+        function getGeoLocation() {
+            const statusText = document.getElementById('gpsStatusText');
+            if (!navigator.geolocation) {
+                statusText.innerText = "متصفحك لا يدعم خاصية تحديد الموقع الجغرافي.";
+                return;
+            }
+            statusText.innerText = "جاري تحديد إحداثيات الموقع الحالي...";
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    statusText.innerHTML = `تم تحديد الموقع بنجاح: <span class="text-emerald-400 font-mono">${lat.toFixed(4)}, ${lon.toFixed(4)}</span>`;
+                    window.open(`https://www.google.com/maps?q=${lat},${lon}`, '_blank');
+                },
+                (error) => {
+                    statusText.innerText = "تعذر تحديد الموقع. يرجى التأكد من تفعيل إذن الموقع (GPS).";
+                },
+                { enableHighAccuracy: true }
+            );
+        }
+
         function renderAssets(filtered = null) {
             const list = filtered || assets;
             const tbody = document.getElementById('assetsTableBody');
@@ -386,6 +422,7 @@
                             ${item.status}
                         </span>
                     </td>
+                    <td class="p-4 text-slate-400 text-xs">${item.notes || '-'}</td>
                     <td class="p-4 no-print text-center">
                         <div class="flex items-center justify-center gap-2">
                             <button onclick="openEditModal('${item.id}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg"><i class="fa-solid fa-pen"></i></button>
@@ -450,6 +487,7 @@
                 a.code.toLowerCase().includes(query) || 
                 a.building.toLowerCase().includes(query) ||
                 a.location.toLowerCase().includes(query) ||
+                (a.notes && a.notes.toLowerCase().includes(query)) ||
                 (a.categoryNum && a.categoryNum.includes(query))
             );
             renderAssets(filtered);
@@ -475,6 +513,7 @@
             document.getElementById('assetCategoryNum').value = item.categoryNum || '';
             document.getElementById('assetQuantity').value = item.quantity;
             document.getElementById('assetStatus').value = item.status;
+            document.getElementById('assetNotes').value = item.notes || '';
             document.getElementById('assetImageBase64').value = item.image || '';
 
             if (item.image) {
@@ -504,6 +543,7 @@
                 categoryNum: document.getElementById('assetCategoryNum').value,
                 quantity: Number(document.getElementById('assetQuantity').value),
                 status: document.getElementById('assetStatus').value,
+                notes: document.getElementById('assetNotes').value,
                 image: document.getElementById('assetImageBase64').value
             };
 
@@ -557,6 +597,7 @@
                             <div class="text-emerald-400 font-bold text-sm"><i class="fa-solid fa-check-circle ml-1"></i>تم التعرف على الأصل:</div>
                             <div class="text-white font-bold">${found.name} (${found.code})</div>
                             <div class="text-xs text-slate-300">المبنى: ${found.building} | الموقع: ${found.location} | الكمية: ${found.quantity}</div>
+                            <div class="text-xs text-blue-400">ملاحظات: ${found.notes || 'لا توجد'}</div>
                         `;
                     } else {
                         res.innerHTML = `<div class="text-rose-400 font-bold text-sm">رمز QR غير مسجل في النظام: ${decodedText}</div>`;
@@ -566,9 +607,9 @@
         }
 
         function exportCSV() {
-            let csv = '\uFEFFكود الأصل,اسم الأصل,المبنى,الموقع,رقم الصنف,الكمية,الحالة\n';
+            let csv = '\uFEFFكود الأصل,اسم الأصل,المبنى,الموقع,رقم الصنف,الكمية,الحالة,ملاحظات\n';
             assets.forEach(a => {
-                csv += `"${a.code}","${a.name}","${a.building}","${a.location}","${a.categoryNum}",${a.quantity},"${a.status}"\n`;
+                csv += `"${a.code}","${a.name}","${a.building}","${a.location}","${a.categoryNum}",${a.quantity},"${a.status}","${a.notes || ''}"\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
