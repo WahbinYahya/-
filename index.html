@@ -309,11 +309,13 @@
         </div>
     </div>
 
-    <!-- Modal: View QR Code (Styled nicely & responsive) -->
+    <!-- Modal: View QR Code -->
     <div id="qrModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-panel bg-slate-900 w-full max-w-sm rounded-2xl border border-slate-700 p-6 text-center space-y-4 shadow-2xl">
             <h3 class="text-base font-bold text-white" id="qrModalTitle">رمز QR</h3>
-            <div id="qrCodeContainer" class="p-4 bg-white rounded-xl inline-block shadow-inner mx-auto flex items-center justify-center"></div>
+            <div class="p-4 bg-white rounded-xl inline-block shadow-inner mx-auto flex items-center justify-center">
+                <div id="qrCodeContainer"></div>
+            </div>
             <div>
                 <p id="qrModalCode" class="text-xs font-mono font-bold text-blue-400"></p>
                 <p id="qrModalName" class="text-xs text-slate-300 mt-1"></p>
@@ -335,13 +337,17 @@
 
     <!-- Application Script Logic -->
     <script>
-        const defaultAssets = [
+        const initialAssets = [
             { id: "1", code: "MECH-J-1001", name: "أجهزة حاسب قاعة التدريب النظري", building: "مبنى النظري 1930J", location: "قاعة الحاسب 101", categoryNum: "1000", quantity: 20, status: "ممتازة", notes: "بحالة ممتازة", image: "" },
             { id: "2", code: "MECH-J-1002", name: "أجهزة عرض (بروجكتور)", building: "مبنى النظري 1930J", location: "قاعات المحاضرات", categoryNum: "2000", quantity: 5, status: "ممتازة", notes: "", image: "" },
-            { id: "3", code: "MECH-I-3001", name: "أجهزة فحص الأعطال (Xtool)", building: "مبنى الورش 1930I", location: "ورشة السيارات", categoryNum: "3000", quantity: 8, status: "ممتازة", notes: "تحتاج تحديث", image: "" }
+            { id: "3", code: "MECH-I-3001", name: "أجهزة فحص الأعطال (Xtool)", building: "مبنى الورش 1930I", location: "ورشة السيارات", categoryNum: "3000", quantity: 8, status: "ممتازة", notes: "تحتاج تحديث", image: "" },
+            { id: "4", code: "MECH-I-3002", name: "منضدة ومعدات صيانة ميكانيكية", building: "مبنى الورش 1930I", location: "ورشة الميكانيكا العامة", categoryNum: "3000", quantity: 15, status: "جيدة", notes: "", image: "" }
         ];
 
-        let assets = JSON.parse(localStorage.getItem('mech_assets_final')) || JSON.parse(localStorage.getItem('mech_assets_v5')) || defaultAssets;
+        // دمج البيانات القديمة والجديدة لضمان عدم ضياع أي صنف مضاف مسبقاً
+        let savedAssets = JSON.parse(localStorage.getItem('mech_assets_final')) || JSON.parse(localStorage.getItem('mech_assets_v5')) || [];
+        let assets = savedAssets.length > 0 ? savedAssets : initialAssets;
+        
         let html5QrcodeScanner = null;
         let buildingChartInstance = null;
         let statusChartInstance = null;
@@ -357,7 +363,6 @@
                 const isQrOpen = event.state && event.state.qrModalOpen;
 
                 if (isQrOpen) {
-                    // إذا كان الباركود مفتوحاً وتم الضغط على رجوع، نقفل النافذة فقط ونبقى في الصفحة
                     document.getElementById('qrModal').classList.add('hidden');
                 } else {
                     switchTab(targetTab, false);
@@ -401,10 +406,10 @@
             filterAssets();
         }
 
-        // QR Modals with History pushState for Back button support
         function showGlobalQr() {
-            document.getElementById('qrCodeContainer').innerHTML = '';
-            new QRCode(document.getElementById('qrCodeContainer'), {
+            const container = document.getElementById('qrCodeContainer');
+            container.innerHTML = '';
+            new QRCode(container, {
                 text: "SYSTEM-INVENTORY-MECH-ALL",
                 width: 180,
                 height: 180
@@ -414,13 +419,13 @@
             document.getElementById('qrModalName').innerText = 'قسم التقنية الميكانيكية - كافة الأصول';
             document.getElementById('qrModal').classList.remove('hidden');
             
-            // إضافة حالة للتاريخ لكي يعود بالرئيسية عند الضغط على زر الرجوع
             history.pushState({ tab: 'dashboard', qrModalOpen: true }, '', '#global-qr');
         }
 
         function showBuildingQr(buildingName) {
-            document.getElementById('qrCodeContainer').innerHTML = '';
-            new QRCode(document.getElementById('qrCodeContainer'), {
+            const container = document.getElementById('qrCodeContainer');
+            container.innerHTML = '';
+            new QRCode(container, {
                 text: buildingName,
                 width: 180,
                 height: 180
@@ -434,8 +439,9 @@
         }
 
         function showQrModal(code, name) {
-            document.getElementById('qrCodeContainer').innerHTML = '';
-            new QRCode(document.getElementById('qrCodeContainer'), {
+            const container = document.getElementById('qrCodeContainer');
+            container.innerHTML = '';
+            new QRCode(container, {
                 text: code,
                 width: 180,
                 height: 180
@@ -450,7 +456,6 @@
 
         function closeQrModal() {
             document.getElementById('qrModal').classList.add('hidden');
-            // العودة للتاريخ السابق عند إغلاق النافذة يدوياً
             if (window.history.state && window.history.state.qrModalOpen) {
                 history.back();
             }
