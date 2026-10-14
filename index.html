@@ -63,7 +63,7 @@
     <!-- Main Content Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
 
-        <!-- TAB 1: DASHBOARD (Home with 2 Building Cards & QR Section) -->
+        <!-- TAB 1: DASHBOARD -->
         <section id="tab-dashboard" class="space-y-6">
             <!-- Summary Stats -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -109,7 +109,7 @@
                     <!-- Building QR Section -->
                     <div class="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
                         <span class="text-xs text-slate-400 font-semibold"><i class="fa-solid fa-qrcode text-emerald-400 ml-1"></i> باركود المبنى النظري</span>
-                        <button onclick="showBuildingQr('مبنى النظري 1930J')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition">
+                        <button onclick="showBuildingQr('مبنى النظري 1930J')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition cursor-pointer">
                             <i class="fa-solid fa-eye ml-1"></i> عرض الباركود
                         </button>
                     </div>
@@ -133,7 +133,7 @@
                     <!-- Building QR Section -->
                     <div class="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
                         <span class="text-xs text-slate-400 font-semibold"><i class="fa-solid fa-qrcode text-amber-400 ml-1"></i> باركود مبنى الورش</span>
-                        <button onclick="showBuildingQr('مبنى الورش 1930I')" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold transition">
+                        <button onclick="showBuildingQr('مبنى الورش 1930I')" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold transition cursor-pointer">
                             <i class="fa-solid fa-eye ml-1"></i> عرض الباركود
                         </button>
                     </div>
@@ -151,7 +151,7 @@
                         <p class="text-xs text-slate-400 mt-1">رمز QR الموحد الخاص بقسم التقنية الميكانيكية لكامل الأصول والتجهيزات.</p>
                     </div>
                 </div>
-                <button onclick="showGlobalQr()" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition">
+                <button onclick="showGlobalQr()" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition cursor-pointer">
                     <i class="fa-solid fa-qrcode"></i> عرض الباركود الشامل
                 </button>
             </div>
@@ -339,7 +339,8 @@
             { id: "3", code: "MECH-I-3001", name: "أجهزة فحص الأعطال (Xtool)", building: "مبنى الورش 1930I", location: "ورشة السيارات", categoryNum: "3000", quantity: 8, status: "ممتازة", notes: "تحتاج تحديث", image: "" }
         ];
 
-        let assets = JSON.parse(localStorage.getItem('mech_assets_v5')) || defaultAssets;
+        // استرجاع البيانات المحفوظة، أو وضع الافتراضية إذا لم تكن موجودة
+        let assets = JSON.parse(localStorage.getItem('mech_assets_final')) || JSON.parse(localStorage.getItem('mech_assets_v5')) || defaultAssets;
         let html5QrcodeScanner = null;
         let buildingChartInstance = null;
         let statusChartInstance = null;
@@ -357,7 +358,7 @@
         });
 
         function saveToLocalStorage() {
-            localStorage.setItem('mech_assets_v5', JSON.stringify(assets));
+            localStorage.setItem('mech_assets_final', JSON.stringify(assets));
         }
 
         function switchTab(tab, pushHistory = true) {
@@ -395,8 +396,8 @@
             document.getElementById('qrCodeContainer').innerHTML = '';
             new QRCode(document.getElementById('qrCodeContainer'), {
                 text: "SYSTEM-INVENTORY-MECH-ALL",
-                width: 150,
-                height: 150
+                width: 180,
+                height: 180
             });
             document.getElementById('qrModalTitle').innerText = 'باركود الجرد الشامل';
             document.getElementById('qrModalCode').innerText = 'SYSTEM-INVENTORY-MECH-ALL';
@@ -408,8 +409,8 @@
             document.getElementById('qrCodeContainer').innerHTML = '';
             new QRCode(document.getElementById('qrCodeContainer'), {
                 text: buildingName,
-                width: 150,
-                height: 150
+                width: 180,
+                height: 180
             });
             document.getElementById('qrModalTitle').innerText = 'باركود ' + buildingName;
             document.getElementById('qrModalCode').innerText = buildingName;
@@ -433,7 +434,7 @@
                 tr.innerHTML = `
                     <td class="p-4">${imgHtml}</td>
                     <td class="p-4">
-                        <button onclick="showQrModal('${item.code}', '${item.name}')" class="p-2 bg-slate-800 hover:bg-blue-600/20 text-blue-400 rounded-lg transition">
+                        <button onclick="showQrModal('${item.code}', '${item.name}')" class="p-2 bg-slate-800 hover:bg-blue-600/20 text-blue-400 rounded-lg transition cursor-pointer">
                             <i class="fa-solid fa-qrcode text-base"></i>
                         </button>
                     </td>
@@ -450,8 +451,8 @@
                     <td class="p-4 text-slate-400 text-xs">${item.notes || '-'}</td>
                     <td class="p-4 no-print text-center">
                         <div class="flex items-center justify-center gap-2">
-                            <button onclick="openEditModal('${item.id}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteAsset('${item.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="openEditModal('${item.id}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg cursor-pointer"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteAsset('${item.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg cursor-pointer"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </td>
                 `;
@@ -598,8 +599,8 @@
             document.getElementById('qrCodeContainer').innerHTML = '';
             new QRCode(document.getElementById('qrCodeContainer'), {
                 text: code,
-                width: 150,
-                height: 150
+                width: 180,
+                height: 180
             });
             document.getElementById('qrModalTitle').innerText = 'رمز QR الخاص بالأصل';
             document.getElementById('qrModalCode').innerText = code;
