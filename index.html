@@ -47,13 +47,13 @@
             </div>
             
             <div class="flex items-center gap-1 sm:gap-2">
-                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-blue-600 text-white shadow-md">
+                <button onclick="switchTab('dashboard', true)" id="btn-dashboard" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-blue-600 text-white shadow-md">
                     <i class="fa-solid fa-chart-pie ml-1"></i> الرئيسية
                 </button>
-                <button onclick="switchTab('assets')" id="btn-assets" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-slate-400 hover:text-white hover:bg-slate-800">
+                <button onclick="switchTab('assets', true)" id="btn-assets" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-slate-400 hover:text-white hover:bg-slate-800">
                     <i class="fa-solid fa-list-check ml-1"></i> الجرد الشامل
                 </button>
-                <button onclick="switchTab('scanner')" id="btn-scanner" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-slate-400 hover:text-white hover:bg-slate-800">
+                <button onclick="switchTab('scanner', true)" id="btn-scanner" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-slate-400 hover:text-white hover:bg-slate-800">
                     <i class="fa-solid fa-qrcode ml-1"></i> مسح
                 </button>
             </div>
@@ -89,7 +89,7 @@
                 </div>
             </div>
 
-            <!-- Building Selection Cards (The 2 Icons/Cards Requested) -->
+            <!-- Building Selection Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                 <!-- Card 1: Theory Building -->
                 <div onclick="filterByBuildingCard('مبنى النظري 1930J')" class="glass-panel p-6 rounded-2xl border border-emerald-500/30 hover:border-emerald-500 cursor-pointer transition transform hover:-translate-y-1 bg-gradient-to-br from-slate-900 to-emerald-950/30 flex items-center justify-between shadow-xl">
@@ -314,19 +314,29 @@
             renderAssets();
             updateStats();
             initCharts();
+            
+            // Handle browser back button (popstate)
+            window.addEventListener('popstate', (event) => {
+                const targetTab = event.state && event.state.tab ? event.state.tab : 'dashboard';
+                switchTab(targetTab, false);
+            });
         });
 
         function saveToLocalStorage() {
             localStorage.setItem('mech_assets_v2', JSON.stringify(assets));
         }
 
-        function switchTab(tab) {
+        function switchTab(tab, pushHistory = true) {
             ['dashboard', 'assets', 'scanner'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
                 document.getElementById(`btn-${t}`).className = "px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-slate-400 hover:text-white hover:bg-slate-800";
             });
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
             document.getElementById(`btn-${tab}`).className = "px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-blue-600 text-white shadow-md";
+
+            if (pushHistory) {
+                history.pushState({ tab: tab }, '', `#${tab}`);
+            }
 
             if (tab === 'assets') {
                 document.getElementById('searchInput').value = '';
@@ -340,9 +350,8 @@
             }
         }
 
-        // Function triggered when clicking one of the two building cards on the home page
         function filterByBuildingCard(buildingName) {
-            switchTab('assets');
+            switchTab('assets', true);
             document.getElementById('searchInput').value = buildingName;
             filterAssets();
         }
