@@ -304,11 +304,11 @@
         const defaultAssets = [
             { id: "1", code: "MECH-J-1001", name: "أجهزة حاسب قاعة التدريب النظري", building: "مبنى النظري 1930J", location: "قاعة الحاسب 101", categoryNum: "1000", quantity: 20, status: "ممتازة", notes: "بحالة ممتازة", image: "" },
             { id: "2", code: "MECH-J-1002", name: "أجهزة عرض (بروجكتور)", building: "مبنى النظري 1930J", location: "قاعات المحاضرات", categoryNum: "2000", quantity: 5, status: "ممتازة", notes: "", image: "" },
-            { id: "3", code: "MECH-I-3001", name: "أجهزة فحص الأعطال (Xtool / Launch)", building: "مبنى الورش 1930I", location: "ورشة السيارات", categoryNum: "3000", quantity: 8, status: "ممتازة", notes: "أجهزة فحص متطورة", image: "" },
-            { id: "4", code: "MECH-I-3002", name: "منضدة ومعدات صيانة ميكانيكية", building: "مبنى الورش 1930I", location: "ورشة الميكانيكا العامة", categoryNum: "3000", quantity: 15, status: "جيدة", notes: "معدات يدوية ورئيسية", image: "" }
+            { id: "3", code: "MECH-I-3001", name: "أجهزة فحص الأعطال (Xtool)", building: "مبنى الورش 1930I", location: "ورشة السيارات", categoryNum: "3000", quantity: 8, status: "ممتازة", notes: "تحتاج تحديث", image: "" },
+            { id: "4", code: "MECH-I-3002", name: "منضدة ومعدات صيانة ميكانيكية", building: "مبنى الورش 1930I", location: "ورشة الميكانيكا العامة", categoryNum: "3000", quantity: 15, status: "جيدة", notes: "", image: "" }
         ];
 
-        let assets = JSON.parse(localStorage.getItem('mech_assets_v5')) || defaultAssets;
+        let assets = JSON.parse(localStorage.getItem('mech_assets_final')) || defaultAssets;
         let html5QrcodeScanner = null;
         let buildingChartInstance = null;
         let statusChartInstance = null;
@@ -321,7 +321,7 @@
         });
 
         function saveToLocalStorage() {
-            localStorage.setItem('mech_assets_v5', JSON.stringify(assets));
+            localStorage.setItem('mech_assets_final', JSON.stringify(assets));
         }
 
         function switchTab(tab) {
@@ -491,7 +491,7 @@
 
         function saveAsset(e) {
             e.preventDefault();
-            const id = document.getElementById('assetId.value') || document.getElementById('assetId').value;
+            const id = document.getElementById('assetId').value;
             const assetData = {
                 id: id || Date.now().toString(),
                 code: document.getElementById('assetCode').value,
@@ -507,11 +507,7 @@
 
             if (id) {
                 const index = assets.findIndex(a => a.id === id);
-                if (index !== -1) {
-                    assets[index] = assetData;
-                } else {
-                    assets.push(assetData);
-                }
+                assets[index] = assetData;
             } else {
                 assets.push(assetData);
             }
