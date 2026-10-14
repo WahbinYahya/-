@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام جرد الأصول  QR - قسم التقنية الميكانيكية</title>
+    <title>نظام جرد الأصول QR - قسم التقنية الميكانيكية</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -41,7 +41,7 @@
                     <i class="fa-solid fa-boxes-stacked text-xl text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-sm sm:text-lg font-bold text-white leading-tight">نظام جرد الأصول ورموز QR</h1>
+                    <h1 class="text-sm sm:text-lg font-bold text-white leading-tight">نظام جرد الأصول QR</h1>
                     <p class="text-xs text-blue-400 font-semibold">قسم التقنية الميكانيكية</p>
                 </div>
             </div>
@@ -315,7 +315,6 @@
             updateStats();
             initCharts();
             
-            // Handle browser back button (popstate)
             window.addEventListener('popstate', (event) => {
                 const targetTab = event.state && event.state.tab ? event.state.tab : 'dashboard';
                 switchTab(targetTab, false);
@@ -539,79 +538,3 @@
             document.getElementById('qrModalCode').innerText = code;
             document.getElementById('qrModalName').innerText = name;
             document.getElementById('qrModal').classList.remove('hidden');
-        }
-
-        function closeQrModal() {
-            document.getElementById('qrModal').classList.add('hidden');
-        }
-
-        function startScanner() {
-            if (!html5QrcodeScanner) {
-                html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 200 });
-                html5QrcodeScanner.render((decodedText) => {
-                    const found = assets.find(a => a.code === decodedText);
-                    const res = document.getElementById('scannedResult');
-                    res.classList.remove('hidden');
-                    if (found) {
-                        res.innerHTML = `
-                            <div class="text-emerald-400 font-bold text-sm"><i class="fa-solid fa-check-circle ml-1"></i>تم التعرف على الأصل:</div>
-                            <div class="text-white font-bold">${found.name} (${found.code})</div>
-                            <div class="text-xs text-slate-300">المبنى: ${found.building} | الموقع: ${found.location} | الكمية: ${found.quantity}</div>
-                        `;
-                    } else {
-                        res.innerHTML = `<div class="text-rose-400 font-bold text-sm">رمز QR غير مسجل في النظام: ${decodedText}</div>`;
-                    }
-                }, (error) => {});
-            }
-        }
-
-        function exportCSV() {
-            let csv = '\uFEFFكود الأصل,اسم الأصل,المبنى,الموقع,رقم الصنف,الكمية,الحالة\n';
-            assets.forEach(a => {
-                csv += `"${a.code}","${a.name}","${a.building}","${a.location}","${a.categoryNum}",${a.quantity},"${a.status}"\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'جرد_قسم_التقنية_الميكانيكية.csv';
-            link.click();
-        }
-
-        function initCharts() {
-            const bldgJCount = assets.filter(a => a.building === 'مبنى النظري 1930J').reduce((sum, item) => sum + Number(item.quantity), 0);
-            const bldgICount = assets.filter(a => a.building === 'مبنى الورش 1930I').reduce((sum, item) => sum + Number(item.quantity), 0);
-
-            const ctx1 = document.getElementById('buildingChart').getContext('2d');
-            buildingChartInstance = new Chart(ctx1, {
-                type: 'doughnut',
-                data: {
-                    labels: ['مبنى النظري 1930J', 'مبنى الورش 1930I'],
-                    datasets: [{
-                        data: [bldgJCount, bldgICount],
-                        backgroundColor: ['#10b981', '#f59e0b']
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8' } } } }
-            });
-
-            const excellent = assets.filter(a => a.status === 'ممتازة').reduce((sum, item) => sum + Number(item.quantity), 0);
-            const good = assets.filter(a => a.status === 'جيدة').reduce((sum, item) => sum + Number(item.quantity), 0);
-            const maintenance = assets.filter(a => a.status === 'تحت الصيانة').reduce((sum, item) => sum + Number(item.quantity), 0);
-
-            const ctx2 = document.getElementById('statusChart').getContext('2d');
-            statusChartInstance = new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: ['ممتازة', 'جيدة', 'تحت الصيانة'],
-                    datasets: [{
-                        label: 'عدد القطع',
-                        data: [excellent, good, maintenance],
-                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b']
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } }, plugins: { legend: { labels: { color: '#94a3b8' } } } }
-            });
-        }
-    </script>
-</body>
-</html>
